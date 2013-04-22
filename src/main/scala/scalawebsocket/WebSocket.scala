@@ -56,6 +56,7 @@ class WebSocket(client: AsyncHttpClient) extends Logging {
     * @return this [[scalawebsocket.WebSocket]]
     */
   def open(url: String): WebSocket = {
+    if (!(url.startsWith("ws://") || url.startsWith("wss://"))) throw new IllegalArgumentException("Only ws and wss schemes are supported")
     if (client.isClosed) throw new IllegalStateException("Client is closed, please create a new scalawebsocket.WebSocket instance by calling WebSocket()")
     val handler = new WebSocketUpgradeHandler.Builder().addWebSocketListener(internalWebSocketListener).build()
     ws = client.prepareGet(url).execute(handler).get()
