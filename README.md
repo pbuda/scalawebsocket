@@ -5,6 +5,8 @@ ScalaWebSocket provides Scala vocabulary for async-http-client's WebSocket suppo
 
 Currently compiled against Scala 2.10.0
 
+[![Build Status](https://travis-ci.org/pbuda/scalawebsocket.png)](https://travis-ci.org/pbuda/scalawebsocket)
+
 Example
 =======
 
