@@ -3,10 +3,38 @@ import Keys._
 
 object BuildSettings {
   val buildSettings = Defaults.defaultSettings ++ Seq(
-    organization := "scalawebsocket",
+    homepage := Some(url("https://github.com/pbuda/scalawebsocket")),
+    licenses := Seq("Apache License 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+    organization := "eu.piotrbuda",
     name := "scalawebsocket",
     version := "0.1.0-SNAPSHOT",
-    scalaVersion := "2.10.0"
+    scalaVersion := "2.10.0",
+    publishMavenStyle := true,
+    publishTo <<= version {
+      (v: String) =>
+        val nexus = "https://oss.sonatype.org/"
+        if (v.trim.endsWith("SNAPSHOT"))
+          Some("snapshots" at nexus + "content/repositories/snapshots")
+        else
+          Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    },
+    publishArtifact in Test := false,
+    pomIncludeRepository := {
+      _ => false
+    },
+    pomExtra := (
+      <scm>
+        <url>git@github.com:pbuda/scalawebsocket.git</url>
+        <connection>scm:git:git@github.com:pbuda/scalawebsocket.git</connection>
+      </scm>
+        <developers>
+          <developer>
+            <id>pbuda</id>
+            <name>Piotr Buda</name>
+            <url>http://www.piotrbuda.eu</url>
+          </developer>
+        </developers>
+      )
   )
 }
 
