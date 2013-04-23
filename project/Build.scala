@@ -7,7 +7,7 @@ object BuildSettings {
     licenses := Seq("Apache License 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
     organization := "eu.piotrbuda",
     name := "scalawebsocket",
-    version := "0.1.0",
+    version := "0.2.0-SNAPSHOT",
     scalaVersion := "2.10.0",
     publishMavenStyle := true,
     publishTo <<= version {
