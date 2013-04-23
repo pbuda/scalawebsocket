@@ -5,7 +5,34 @@ ScalaWebSocket provides Scala vocabulary for async-http-client's WebSocket suppo
 
 Currently compiled against Scala 2.10.0
 
+Current version is **0.1.0**
+
 [![Build Status](https://travis-ci.org/pbuda/scalawebsocket.png)](https://travis-ci.org/pbuda/scalawebsocket)
+
+Installation
+============
+
+ScalaWebSocket lives in Sonatype's repositories and releases are synced to Maven Central. To use snapshot versions,
+simply add Sonatype snapshot repository to resolvers.
+
+```
+resolvers += "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
+```
+
+#### Using SBT
+
+```
+libraryDependncies += "eu.piotrbuda" %% "scalawebsocket" % "0.1.0"
+```
+
+#### Using Maven
+```
+<dependency>
+  <groupId>eu.piotrbuda</groupId>
+  <artifactId>scalawebsocket_2.10</artifactId>
+  <version>0.1.0</version>
+</dependency>
+```
 
 Example
 =======
