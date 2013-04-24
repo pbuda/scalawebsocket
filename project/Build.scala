@@ -8,7 +8,7 @@ object BuildSettings {
     organization := "eu.piotrbuda",
     name := "scalawebsocket",
     version := "0.2.0-SNAPSHOT",
-    scalaVersion := "2.10.0",
+    scalaVersion := "2.10.1",
     publishMavenStyle := true,
     publishTo <<= version {
       (v: String) =>
