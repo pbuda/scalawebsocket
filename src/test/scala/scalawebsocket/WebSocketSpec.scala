@@ -103,7 +103,7 @@ class WebSocketSpec extends BaseTest with Logging {
   }
 
   it should "remove specified onOpen handler" in {
-    def openHandler(ws: websocket.WebSocket) {
+    def openHandler(ws: WebSocket) {
       throw new IllegalStateException("This handler should be removed")
     }
     val handler = openHandler _
@@ -122,7 +122,7 @@ class WebSocketSpec extends BaseTest with Logging {
   }
 
   it should "remove specified onClose handler" in {
-    def closeHandler(ws: websocket.WebSocket) {
+    def closeHandler(ws: WebSocket) {
       throw new IllegalStateException("This handler should be removed")
     }
     val handler = closeHandler _

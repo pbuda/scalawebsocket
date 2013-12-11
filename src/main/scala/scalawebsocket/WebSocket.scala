@@ -37,10 +37,11 @@ object WebSocket {
   * @param client preconfigured instance of the [[com.ning.http.client.AsyncHttpClient]]
   */
 class WebSocket(client: AsyncHttpClient) extends Logging {
+  self =>
 
   type OnTextMessageHandler = String => Unit
   type OnBinaryMessageHandler = Array[Byte] => Unit
-  type OnWebSocketOperationHandler = websocket.WebSocket => Unit
+  type OnWebSocketOperationHandler = WebSocket => Unit
   type OnErrorHandler = Throwable => Unit
 
   private var ws: websocket.WebSocket = _
@@ -60,6 +61,7 @@ class WebSocket(client: AsyncHttpClient) extends Logging {
     if (client.isClosed) throw new IllegalStateException("Client is closed, please create a new scalawebsocket.WebSocket instance by calling WebSocket()")
     val handler = new WebSocketUpgradeHandler.Builder().addWebSocketListener(internalWebSocketListener).build()
     ws = client.prepareGet(url).execute(handler).get()
+    openHandlers foreach (_(self))
     this
   }
 
@@ -84,11 +86,11 @@ class WebSocket(client: AsyncHttpClient) extends Logging {
       }
 
       def onClose(ws: websocket.WebSocket) {
-        closeHandlers foreach (_(ws))
+        closeHandlers foreach (_(self))
       }
 
       def onOpen(ws: websocket.WebSocket) {
-        openHandlers foreach (_(ws))
+        // onOpen handlers are called from open() after the WebSocket has been initialized
       }
 
       def onFragment(fragment: String, last: Boolean) {
