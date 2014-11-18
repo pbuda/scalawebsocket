@@ -18,7 +18,7 @@ package scalawebsocket
 
 import com.ning.http.client.{websocket, AsyncHttpClient}
 import com.ning.http.client.websocket.{WebSocketTextListener, WebSocketByteListener, WebSocketUpgradeHandler}
-import com.typesafe.scalalogging.log4j.Logging
+import com.typesafe.scalalogging.LazyLogging
 
 object WebSocket {
   def apply() = {
@@ -36,7 +36,7 @@ object WebSocket {
   *
   * @param client preconfigured instance of the [[com.ning.http.client.AsyncHttpClient]]
   */
-class WebSocket(client: AsyncHttpClient) extends Logging {
+class WebSocket(client: AsyncHttpClient) extends LazyLogging {
   self =>
 
   type OnTextMessageHandler = String => Unit
