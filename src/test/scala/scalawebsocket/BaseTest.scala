@@ -17,24 +17,24 @@
 package scalawebsocket
 
 import org.eclipse.jetty.server.nio.SelectChannelConnector
-import com.typesafe.scalalogging.log4j.Logging
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.{FlatSpec, BeforeAndAfterAll}
+import com.typesafe.scalalogging.LazyLogging
+import org.scalatest.{ConfigMap, Matchers, FlatSpec, BeforeAndAfterAllConfigMap}
 import org.eclipse.jetty.server.{Request, Server}
 import org.eclipse.jetty.server.handler.HandlerWrapper
 import org.eclipse.jetty.websocket.WebSocketFactory
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import java.net.ServerSocket
 
-abstract class BaseTest extends Server with FlatSpec with BeforeAndAfterAll with ShouldMatchers with Logging {
+abstract class BaseTest extends FlatSpec with BeforeAndAfterAllConfigMap with Matchers with LazyLogging {
+  private[this] val server = new Server()
   protected var port1: Int = 0
   private var _connector: SelectChannelConnector = null
 
-  override def beforeAll(configMap: Map[String, Any]) {
+  override def beforeAll(configMap: ConfigMap) {
     setUpGlobal()
   }
 
-  override def afterAll(configMap: Map[String, Any]) {
+  override def afterAll(configMap: ConfigMap) {
     tearDownGlobal()
   }
 
@@ -42,15 +42,15 @@ abstract class BaseTest extends Server with FlatSpec with BeforeAndAfterAll with
     port1 = findFreePort
     _connector = new SelectChannelConnector
     _connector.setPort(port1)
-    addConnector(_connector)
+    server.addConnector(_connector)
     val _wsHandler: BaseTest#WebSocketHandler = getWebSocketHandler
-    setHandler(_wsHandler)
-    start()
+    server.setHandler(_wsHandler)
+    server.start()
     logger.info("Local HTTP server started successfully")
   }
 
   def tearDownGlobal() {
-    stop()
+    server.stop()
   }
 
   abstract class WebSocketHandler extends HandlerWrapper with WebSocketFactory.Acceptor {

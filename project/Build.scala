@@ -8,7 +8,7 @@ object BuildSettings {
     organization := "eu.piotrbuda",
     name := "scalawebsocket",
     version := "0.1.1",
-    scalaVersion := "2.10.1",
+    scalaVersion := "2.11.4",
     publishMavenStyle := true,
     publishTo <<= version {
       (v: String) =>
@@ -39,13 +39,13 @@ object BuildSettings {
 }
 
 object Dependencies {
-  val asynchttpclient = "com.ning" % "async-http-client" % "1.7.13"
+  val asynchttpclient = "com.ning" % "async-http-client" % "1.8.11"
 
   //logging
-  val scalalogging = "com.typesafe" %% "scalalogging-log4j" % "1.0.1"
+  val scalalogging = "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0"
   val log4japi = "org.apache.logging.log4j" % "log4j-api" % "2.0-beta4"
   val log4jcore = "org.apache.logging.log4j" % "log4j-core" % "2.0-beta4"
-  val logback = "ch.qos.logback" % "logback-classic" % "1.0.9"
+  val logback = "ch.qos.logback" % "logback-classic" % "1.1.1"
 
   val logging = Seq(scalalogging, log4japi, log4jcore, logback)
 
@@ -57,7 +57,7 @@ object Dependencies {
 
   val jetty = Seq(jettyServer, jettyWebsocket, jettyServlet, jettyServlets)
 
-  val scalatest = "org.scalatest" %% "scalatest" % "1.9.1" % "test"
+  val scalatest = "org.scalatest" %% "scalatest" % "2.2.1" % "test"
 }
 
 object SWSBuild extends Build {

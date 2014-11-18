@@ -21,13 +21,13 @@ package scalawebsocket
 
 import java.io.IOException
 import javax.servlet.http.HttpServletRequest
-import com.typesafe.scalalogging.log4j.Logging
+import com.typesafe.scalalogging.LazyLogging
 import java.util.concurrent.{TimeUnit, CountDownLatch}
 import com.ning.http.client.{AsyncHttpClient, websocket}
 import org.scalatest.matchers.{MatchResult, BeMatcher}
 
 
-class WebSocketSpec extends BaseTest with Logging {
+class WebSocketSpec extends BaseTest with LazyLogging {
 
   private final class EchoTextWebSocket extends org.eclipse.jetty.websocket.WebSocket with org.eclipse.jetty.websocket.WebSocket.OnTextMessage with org.eclipse.jetty.websocket.WebSocket.OnBinaryMessage {
     private var connection: org.eclipse.jetty.websocket.WebSocket.Connection = null
