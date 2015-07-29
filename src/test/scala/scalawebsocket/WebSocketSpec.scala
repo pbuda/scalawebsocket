@@ -21,65 +21,20 @@ package scalawebsocket
 
 import java.io.IOException
 import javax.servlet.http.HttpServletRequest
-import com.typesafe.scalalogging.log4j.Logging
+import com.typesafe.scalalogging.slf4j._
 import java.util.concurrent.{TimeUnit, CountDownLatch}
 import com.ning.http.client.{AsyncHttpClient, websocket}
-import org.scalatest.matchers.{MatchResult, BeMatcher}
+import org.scalatest._
+import org.scalatest.matchers._
 
 
-class WebSocketSpec extends BaseTest with Logging {
-
-  private final class EchoTextWebSocket extends org.eclipse.jetty.websocket.WebSocket with org.eclipse.jetty.websocket.WebSocket.OnTextMessage with org.eclipse.jetty.websocket.WebSocket.OnBinaryMessage {
-    private var connection: org.eclipse.jetty.websocket.WebSocket.Connection = null
-
-    def onOpen(connection: org.eclipse.jetty.websocket.WebSocket.Connection) {
-      this.connection = connection
-      connection.setMaxTextMessageSize(1000)
-    }
-
-    def onClose(i: Int, s: String) {
-      connection.close()
-    }
-
-    def onMessage(s: String) {
-      try {
-        connection.sendMessage(s)
-      } catch {
-        case e: IOException => {
-          try {
-            connection.sendMessage("FAIL")
-          } catch {
-            case e1: IOException => {
-              e1.printStackTrace()
-            }
-          }
-        }
-      }
-    }
-
-    def onMessage(data: Array[Byte], offset: Int, length: Int) {
-      try {
-        connection.sendMessage(data, offset, length)
-      } catch {
-        case e: IOException => {
-          try {
-            connection.sendMessage("FAIL")
-          } catch {
-            case e1: IOException => {
-              e1.printStackTrace()
-            }
-          }
-        }
-      }
-    }
+class WebSocketSpec extends FlatSpec with TestServer with BeforeAndAfterAll with Matchers with StrictLogging {
+  override def beforeAll() {
+    setUpServer()
   }
 
-  def getWebSocketHandler: BaseTest#WebSocketHandler = {
-    new WebSocketHandler {
-      def doWebSocketConnect(httpServletRequest: HttpServletRequest, s: String): org.eclipse.jetty.websocket.WebSocket = {
-        new EchoTextWebSocket
-      }
-    }
+  override def afterAll() {
+    tearDownServer()
   }
 
   it should "call all onOpen handlers" in {

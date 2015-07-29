@@ -17,40 +17,28 @@
 package scalawebsocket
 
 import org.eclipse.jetty.server.nio.SelectChannelConnector
-import com.typesafe.scalalogging.log4j.Logging
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.{FlatSpec, BeforeAndAfterAll}
+import com.typesafe.scalalogging.slf4j._
 import org.eclipse.jetty.server.{Request, Server}
 import org.eclipse.jetty.server.handler.HandlerWrapper
-import org.eclipse.jetty.websocket.WebSocketFactory
+import org.eclipse.jetty.websocket.{ WebSocketFactory }
+import java.io.IOException
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import java.net.ServerSocket
 
-abstract class BaseTest extends Server with FlatSpec with BeforeAndAfterAll with ShouldMatchers with Logging {
-  protected var port1: Int = 0
-  private var _connector: SelectChannelConnector = null
+trait TestServer extends StrictLogging {
+  val server = new Server()
+  val connector = new SelectChannelConnector
 
-  override def beforeAll(configMap: Map[String, Any]) {
-    setUpGlobal()
-  }
-
-  override def afterAll(configMap: Map[String, Any]) {
-    tearDownGlobal()
-  }
-
-  def setUpGlobal() {
-    port1 = findFreePort
-    _connector = new SelectChannelConnector
-    _connector.setPort(port1)
-    addConnector(_connector)
-    val _wsHandler: BaseTest#WebSocketHandler = getWebSocketHandler
-    setHandler(_wsHandler)
-    start()
+  def setUpServer() {
+    server.addConnector(connector)
+    val _wsHandler = getWebSocketHandler
+    server.setHandler(_wsHandler)
+    server.start()
     logger.info("Local HTTP server started successfully")
   }
 
-  def tearDownGlobal() {
-    stop()
+  def tearDownServer() {
+    server.stop()
   }
 
   abstract class WebSocketHandler extends HandlerWrapper with WebSocketFactory.Acceptor {
@@ -71,21 +59,59 @@ abstract class BaseTest extends Server with FlatSpec with BeforeAndAfterAll with
     private final val _webSocketFactory: WebSocketFactory = new WebSocketFactory(this, 32 * 1024)
   }
 
-  protected def findFreePort: Int = {
-    var socket: ServerSocket = null
-    try {
-      socket = new ServerSocket(0)
-      socket.getLocalPort
-    } finally {
-      if (socket != null) {
-        socket.close()
+  protected def getTargetUrl: String =
+    "ws://127.0.0.1:" + connector.getLocalPort()
+
+  private final class EchoTextWebSocket extends org.eclipse.jetty.websocket.WebSocket with org.eclipse.jetty.websocket.WebSocket.OnTextMessage with org.eclipse.jetty.websocket.WebSocket.OnBinaryMessage {
+    private var connection: org.eclipse.jetty.websocket.WebSocket.Connection = null
+
+    def onOpen(connection: org.eclipse.jetty.websocket.WebSocket.Connection) {
+      this.connection = connection
+      connection.setMaxTextMessageSize(1000)
+    }
+
+    def onClose(i: Int, s: String) {
+      connection.close()
+    }
+
+    def onMessage(s: String) {
+      try {
+        connection.sendMessage(s)
+      } catch {
+        case e: IOException => {
+          try {
+            connection.sendMessage("FAIL")
+          } catch {
+            case e1: IOException => {
+              e1.printStackTrace()
+            }
+          }
+        }
+      }
+    }
+
+    def onMessage(data: Array[Byte], offset: Int, length: Int) {
+      try {
+        connection.sendMessage(data, offset, length)
+      } catch {
+        case e: IOException => {
+          try {
+            connection.sendMessage("FAIL")
+          } catch {
+            case e1: IOException => {
+              e1.printStackTrace()
+            }
+          }
+        }
       }
     }
   }
 
-  protected def getTargetUrl: String = {
-    "ws://127.0.0.1:" + port1
+  def getWebSocketHandler: WebSocketHandler = {
+    new WebSocketHandler {
+      def doWebSocketConnect(httpServletRequest: HttpServletRequest, s: String): org.eclipse.jetty.websocket.WebSocket = {
+        new EchoTextWebSocket
+      }
+    }
   }
-
-  def getWebSocketHandler: BaseTest#WebSocketHandler
 }
