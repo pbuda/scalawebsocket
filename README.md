@@ -22,7 +22,7 @@ resolvers += "Sonatype snapshots" at "http://oss.sonatype.org/content/repositori
 #### Using SBT
 
 ```
-libraryDependncies += "eu.piotrbuda" %% "scalawebsocket" % "0.1.1"
+libraryDependencies += "eu.piotrbuda" %% "scalawebsocket" % "0.1.1"
 ```
 
 #### Using Maven
